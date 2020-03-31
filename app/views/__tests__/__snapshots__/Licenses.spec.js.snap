@@ -89,7 +89,7 @@ exports[`renders correctly 1`] = `
         }
       }
     >
-      Private Kit
+      label.private_kit
     </Text>
     <View
       style={

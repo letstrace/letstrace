@@ -39,24 +39,30 @@ const SimpleWelcomeScreen = props => {
           <Image source={IconLogo} style={styles.infoCardImage} />
         </View>
         <Text style={styles.infoCardHeadText}>
-          {languages.t('label.private_kit')}
+          {languages.t('label.app_name')}
         </Text>
         <Text style={styles.infoCardSubheadText}>
           {languages.t('label.intro_subtitle')}
         </Text>
         <View style={styles.descriptionsContainer}>
           <DescriptionComponent
-            icon={<SvgXml xml={IconGlobe} width={ICON_SIZE} height={ICON_SIZE} />}
+            icon={
+              <SvgXml xml={IconGlobe} width={ICON_SIZE} height={ICON_SIZE} />
+            }
             header={languages.t('label.intro_header_0')}
             subheader={languages.t('label.intro_subheader_0')}
           />
           <DescriptionComponent
-            icon={<SvgXml xml={IconLocked} width={ICON_SIZE} height={ICON_SIZE} />}
+            icon={
+              <SvgXml xml={IconLocked} width={ICON_SIZE} height={ICON_SIZE} />
+            }
             header={languages.t('label.intro_header_1')}
             subheader={languages.t('label.intro_subheader_1')}
           />
           <DescriptionComponent
-            icon={<SvgXml xml={IconSiren} width={ICON_SIZE} height={ICON_SIZE} />}
+            icon={
+              <SvgXml xml={IconSiren} width={ICON_SIZE} height={ICON_SIZE} />
+            }
             header={languages.t('label.intro_header_2')}
             subheader={languages.t('label.intro_subheader_2')}
           />

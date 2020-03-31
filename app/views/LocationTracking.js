@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  Alert,
   SafeAreaView,
   StyleSheet,
   Linking,
@@ -40,11 +41,9 @@ class LocationTracking extends Component {
     super(props);
 
     this.state = {
-      isLogging: '',
+      isLogging: null,
     };
-  }
 
-  componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     GetStoreData('PARTICIPATE')
       .then(isParticipating => {
@@ -61,6 +60,11 @@ class LocationTracking extends Component {
       })
       .catch(error => console.log(error));
   }
+
+  componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+  }
+
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
   }
@@ -78,14 +82,28 @@ class LocationTracking extends Component {
   }
 
   overlap() {
-    this.props.navigation.navigate('OverlapScreen', {});
+    Alert.alert(languages.t('label.home_coming_soon'), '', [
+      {
+        text: languages.t('label.home_ok'),
+        onPress: () => {},
+      },
+    ]);
+    // this.props.navigation.navigate('OverlapScreen', {});
+  }
+
+  testedPositive() {
+    this.props.navigation.navigate('UploadScreen', {});
   }
 
   willParticipate = () => {
-    SetStoreData('PARTICIPATE', 'true').then(() => {
-      LocationServices.start();
-      BroadcastingServices.start();
-    });
+    SetStoreData('PARTICIPATE', 'true')
+      .then(() => {
+        LocationServices.start();
+        BroadcastingServices.start();
+      })
+      .catch(error => {
+        console.log(error);
+      });
 
     // Check and see if they actually authorized in the system dialog.
     // If not, stop services and set the state to !isLogging
@@ -187,6 +205,7 @@ class LocationTracking extends Component {
           {languages.t('label.home_stop_tracking_description')}
         </Text>
 
+        <View style={styles.sectionSpacer} />
         <ButtonWrapper
           title={languages.t('label.home_check_risk')}
           onPress={() => this.overlap()}
@@ -195,6 +214,17 @@ class LocationTracking extends Component {
         />
         <Text style={styles.sectionDescription}>
           {languages.t('label.home_check_risk_description')}
+        </Text>
+
+        <View style={styles.sectionSpacer} />
+        <ButtonWrapper
+          title={languages.t('label.home_tested_positive')}
+          onPress={() => this.testedPositive()}
+          bgColor={Colors.GRAY_BUTTON}
+          toBgColor={Colors.Gray_TO_BUTTON}
+        />
+        <Text style={styles.sectionDescription}>
+          {languages.t('label.home_tested_positive_description')}
         </Text>
       </>
     );
@@ -316,26 +346,35 @@ class LocationTracking extends Component {
     );
   };
 
+  getScrollViewContent = () => {
+    if (this.state.isLogging === null) {
+      return;
+    }
+    return (
+      <>
+        {/* {this.getMenuItem()} */}
+        <Text style={styles.headerTitle}>{languages.t('label.app_name')}</Text>
+
+        <View style={styles.buttonsAndLogoView}>
+          {this.state.isLogging
+            ? this.getTrackingComponent()
+            : this.getNotTrackingComponent()}
+        </View>
+
+        {/* {this.getActionButtons()} */}
+
+        {this.getPrivacyNote()}
+
+        {this.getFooter()}
+      </>
+    );
+  };
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView contentContainerStyle={styles.main}>
-          {this.getMenuItem()}
-          <Text style={styles.headerTitle}>
-            {languages.t('label.private_kit')}
-          </Text>
-
-          <View style={styles.buttonsAndLogoView}>
-            {this.state.isLogging
-              ? this.getTrackingComponent()
-              : this.getNotTrackingComponent()}
-          </View>
-
-          {this.getActionButtons()}
-
-          {this.getPrivacyNote()}
-
-          {this.getFooter()}
+          {this.getScrollViewContent()}
         </ScrollView>
       </SafeAreaView>
     );
@@ -391,6 +430,9 @@ const styles = StyleSheet.create({
     padding: 4,
     paddingBottom: 10,
     flexDirection: 'row',
+  },
+  sectionSpacer: {
+    marginTop: '2%',
   },
   sectionDescription: {
     fontSize: 13,
