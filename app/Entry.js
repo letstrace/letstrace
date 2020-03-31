@@ -7,6 +7,7 @@ import LocationTracking from './views/LocationTracking';
 import Welcome from './views/Welcome';
 import NewsScreen from './views/News';
 import ExportScreen from './views/Export';
+import UploadScreen from './views/Upload';
 import ImportScreen from './views/Import';
 import OverlapScreen from './views/Overlap';
 import LicencesScreen from './views/Licenses';
@@ -63,6 +64,11 @@ class Entry extends Component {
               component={Welcome}
               options={{ headerShown: false }}
             />
+              <Stack.Screen
+                name='UploadScreen'
+                component={UploadScreen}
+                options={{ headerShown: false }}
+              />
             <Stack.Screen
               name='LocationTrackingScreen'
               component={LocationTracking}

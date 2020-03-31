@@ -1,17 +1,19 @@
 {
-    "import":"Import",
-    "export":"Export",
-    "news":"News",
-    "latest_news":"Latest News",
-    "url_info":"For more info visit ",
-    "home_footer":"privatekit.mit.edu",
+  "import": "Import",
+  "export": "Export",
+  "news": "News",
+  "latest_news": "Latest News",
+  "url_info": "Stop COVID is powered by ",
+  "home_footer": "PrivateKit from MIT",
 
-    "home_start_tracking": "Start tracking",
-    "home_start_tracking_description": "You'll need to allow location permissions",
-    "home_stop_tracking": "Stop tracking",
-    "home_stop_tracking_description": "Your location is being saved privately to your phone",
-    "home_check_risk": "Check if you are at risk",
-    "home_check_risk_description": "See if you have crossed paths with someone who has later tested positive for COVID-19",
-    "home_privacy_header": "Privacy Info",
-    "home_privacy_subheader": "Your location history stays on your phone and is never shared without your consent"
+  "home_start_tracking": "Start tracking",
+  "home_start_tracking_description": "You'll need to allow location permissions",
+  "home_stop_tracking": "Stop tracking",
+  "home_stop_tracking_description": "Your location is being saved privately to your phone",
+  "home_check_risk": "Check if you are at risk",
+  "home_check_risk_description": "See if you have crossed paths with someone who has later tested positive for COVID-19",
+  "home_tested_positive": "I tested positive",
+  "home_tested_positive_description": "Notify authorities if you tested positive for COVID-19",
+  "home_privacy_header": "Privacy Info",
+  "home_privacy_subheader": "Your location history stays on your phone and is never shared without your consent"
 }
