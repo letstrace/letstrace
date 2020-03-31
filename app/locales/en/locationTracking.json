@@ -15,5 +15,8 @@
   "home_tested_positive": "I tested positive",
   "home_tested_positive_description": "Notify authorities if you tested positive for COVID-19",
   "home_privacy_header": "Privacy Info",
-  "home_privacy_subheader": "Your location history stays on your phone and is never shared without your consent"
+  "home_privacy_subheader": "Your location history stays on your phone and is never shared without your consent",
+
+  "home_coming_soon": "Coming soon",
+  "home_ok": "OK"
 }

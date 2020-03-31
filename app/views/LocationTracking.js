@@ -82,16 +82,12 @@ class LocationTracking extends Component {
   }
 
   overlap() {
-    Alert.alert(
-      'Coming soon',
-      'Not ready yet',
-      [
-        {
-          text: 'Okay',
-          onPress: () => {},
-        },
-      ],
-    );
+    Alert.alert(languages.t('label.home_coming_soon'), '', [
+      {
+        text: languages.t('label.home_ok'),
+        onPress: () => {},
+      },
+    ]);
     // this.props.navigation.navigate('OverlapScreen', {});
   }
 
