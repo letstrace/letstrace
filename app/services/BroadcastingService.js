@@ -262,7 +262,7 @@ export default class BroadcastingServices {
           setTimeout(
             () =>
               Alert.alert(
-                'Private Kit requires bluetooth to be enabled',
+                'Stop COVID requires bluetooth to be enabled',
                 'Would you like to enable Bluetooth?',
                 [
                   {

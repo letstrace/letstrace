@@ -139,9 +139,9 @@ export default class LocationServices {
       desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
       stationaryRadius: 5,
       distanceFilter: 5,
-      notificationTitle: 'Private Kit Enabled',
+      notificationTitle: 'Stop COVID Enabled',
       notificationText:
-        'Private Kit is securely storing your GPS coordinates once every five minutes on this device.',
+        'Stop COVID is securely storing your GPS coordinates once every five minutes on this device.',
       debug: false, // when true, it beeps every time a loc is read
       startOnBoot: true,
       stopOnTerminate: false,
@@ -229,7 +229,7 @@ export default class LocationServices {
         setTimeout(
           () =>
             Alert.alert(
-              'Private Kit requires access to location information',
+              'Stop COVID requires access to location information',
               'Would you like to open app settings?',
               [
                 {
@@ -276,7 +276,7 @@ export default class LocationServices {
     BackgroundGeolocation.on('stop', () => {
       PushNotification.localNotification({
         title: 'Location Tracking Was Disabled',
-        message: 'Private Kit requires location services.',
+        message: 'Stop COVID requires location services.',
       });
       console.log('[INFO] stop');
     });
@@ -305,7 +305,7 @@ export default class LocationServices {
         setTimeout(
           () =>
             Alert.alert(
-              'Private Kit requires location services to be enabled',
+              'Stop COVID requires location services to be enabled',
               'Would you like to open location settings?',
               [
                 {
@@ -332,7 +332,7 @@ export default class LocationServices {
         setTimeout(
           () =>
             Alert.alert(
-              'Private Kit requires access to location information',
+              'Stop COVID requires access to location information',
               'Would you like to open app settings?',
               [
                 {
@@ -361,7 +361,7 @@ export default class LocationServices {
     // unregister all event listeners
     PushNotification.localNotification({
       title: 'Location Tracking Was Disabled',
-      message: 'Private Kit requires location services.',
+      message: 'Stop COVID requires location services.',
     });
     BackgroundGeolocation.removeAllListeners();
     BackgroundGeolocation.stop();
