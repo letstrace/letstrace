@@ -45,6 +45,28 @@ export class LocationData {
     };
   }
 
+  // NOTE: this will override points that if there is a saveLocation action
+  // after getLocationData is called
+  markLocationAsUploaded() {
+    this.getLocationData().then(locationArray => {
+      // Always work in UTC, not the local time in the locationData
+      let nowUTC = new Date().toISOString();
+      let unixtimeUTC = Date.parse(nowUTC);
+      let unixtimeUTC_28daysAgo = unixtimeUTC - 60 * 60 * 24 * 1000 * 28;
+
+      // Curate the list of points, only keep the last 28 days
+      let curated = [];
+      for (let i = 0; i < locationArray.length; i++) {
+        if (locationArray[i]['time'] > unixtimeUTC_28daysAgo) {
+          locationArray[i].uploaded = true;
+          curated.push(locationArray[i]);
+        }
+      }
+
+      SetStoreData('LOCATION_DATA', curated);
+    });
+  }
+
   saveLocation(location) {
     // Persist this location data in our local storage of time/lat/lon values
     this.getLocationData().then(locationArray => {
@@ -83,6 +105,7 @@ export class LocationData {
         latitude: location['latitude'],
         longitude: location['longitude'],
         time: unixtimeUTC,
+        uploaded: false,
       };
       curated.push(lat_lon_time);
 

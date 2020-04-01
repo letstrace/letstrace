@@ -48,12 +48,12 @@ class Entry extends Component {
                 options={{ headerShown: false }}
               />
             ) : (
-              <Stack.Screen
-                name='InitialScreen'
-                component={SimpleWelcomeScreen}
-                options={{ headerShown: false }}
-              />
-            )}
+                <Stack.Screen
+                  name='InitialScreen'
+                  component={SimpleWelcomeScreen}
+                  options={{ headerShown: false }}
+                />
+              )}
             <Stack.Screen
               name='SimpleWelcomeScreen'
               component={SimpleWelcomeScreen}
@@ -64,11 +64,11 @@ class Entry extends Component {
               component={Welcome}
               options={{ headerShown: false }}
             />
-              <Stack.Screen
-                name='UploadScreen'
-                component={UploadScreen}
-                options={{ headerShown: false }}
-              />
+            <Stack.Screen
+              name='UploadScreen'
+              component={UploadScreen}
+              options={{ headerShown: false }}
+            />
             <Stack.Screen
               name='LocationTrackingScreen'
               component={LocationTracking}

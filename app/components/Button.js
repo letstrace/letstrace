@@ -13,6 +13,7 @@ class Button extends React.Component {
       toBgColor = bgColor,
       titleStyle,
       buttonStyle,
+      disabled,
     } = this.props;
     return (
       <LinearGradient
@@ -21,6 +22,7 @@ class Button extends React.Component {
         colors={[bgColor, toBgColor]}
         style={[buttonStyle ? buttonStyle : styles.container]}>
         <TouchableOpacity
+          disabled={disabled}
           style={[buttonStyle ? buttonStyle : styles.container]}
           onPress={onPress}>
           <Text style={titleStyle ? titleStyle : styles.text}>{title}</Text>

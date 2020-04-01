@@ -71,7 +71,10 @@ const SimpleWelcomeScreen = props => {
 
       <ButtonWrapper
         title={languages.t('label.intro_get_started')}
-        onPress={() => props.navigation.navigate('LocationTrackingScreen')}
+        onPress={() => {
+          props.navigation.replace('LocationTrackingScreen');
+          props.navigation.navigate('LocationTrackingScreen');
+        }}
         bgColor={Colors.BLUE_BUTTON}
         toBgColor={Colors.BLUE_TO_BUTTON}
       />

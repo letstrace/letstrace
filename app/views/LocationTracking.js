@@ -44,7 +44,6 @@ class LocationTracking extends Component {
       isLogging: null,
     };
 
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     GetStoreData('PARTICIPATE')
       .then(isParticipating => {
         if (isParticipating === 'true') {
@@ -192,7 +191,7 @@ class LocationTracking extends Component {
             height: 164.4,
             alignSelf: 'center',
             marginTop: 15,
-            marginBottom: 15,
+            marginBottom: 30,
           }}
         />
         <ButtonWrapper
