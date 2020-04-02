@@ -86,7 +86,7 @@ class UploadScreen extends Component {
         points: dataToUpload,
       };
       try {
-        let response = await fetch('http://localhost:3000/api/v1/track', {
+        let response = await fetch('https://stopcovidusa.org/api/v1/track', {
           method: 'POST',
           headers: {
             Accept: 'application/json',
