@@ -44,7 +44,6 @@ class LocationTracking extends Component {
       isLogging: null,
     };
 
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
     GetStoreData('PARTICIPATE')
       .then(isParticipating => {
         if (isParticipating === 'true') {
@@ -192,7 +191,7 @@ class LocationTracking extends Component {
             height: 164.4,
             alignSelf: 'center',
             marginTop: 15,
-            marginBottom: 15,
+            marginBottom: 30,
           }}
         />
         <ButtonWrapper
@@ -330,17 +329,22 @@ class LocationTracking extends Component {
   getFooter = () => {
     return (
       <View style={styles.footer}>
-        <Text
-          style={[styles.footerDescription, { marginLeft: 0, marginRight: 0 }]}>
-          {languages.t('label.url_info')}{' '}
-        </Text>
-        <Text
-          style={[
-            styles.footerDescription,
-            { color: Colors.BLUE_LINK, marginLeft: 0, marginRight: 0 },
-          ]}
-          onPress={() => Linking.openURL('https://privatekit.mit.edu')}>
-          {languages.t('label.home_footer')}
+        <Text>
+          <Text
+            style={[
+              styles.footerDescription,
+              { marginLeft: 0, marginRight: 0 },
+            ]}>
+            {languages.t('label.url_info')}{' '}
+          </Text>
+          <Text
+            style={[
+              styles.footerDescription,
+              { color: Colors.BLUE_LINK, marginLeft: 0, marginRight: 0 },
+            ]}
+            onPress={() => Linking.openURL('https://privatekit.mit.edu')}>
+            {languages.t('label.home_footer')}
+          </Text>
         </Text>
       </View>
     );

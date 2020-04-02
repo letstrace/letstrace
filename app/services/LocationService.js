@@ -45,6 +45,28 @@ export class LocationData {
     };
   }
 
+  // NOTE: this will override points that if there is a saveLocation action
+  // after getLocationData is called
+  markLocationAsUploaded() {
+    this.getLocationData().then(locationArray => {
+      // Always work in UTC, not the local time in the locationData
+      let nowUTC = new Date().toISOString();
+      let unixtimeUTC = Date.parse(nowUTC);
+      let unixtimeUTC_28daysAgo = unixtimeUTC - 60 * 60 * 24 * 1000 * 28;
+
+      // Curate the list of points, only keep the last 28 days
+      let curated = [];
+      for (let i = 0; i < locationArray.length; i++) {
+        if (locationArray[i]['time'] > unixtimeUTC_28daysAgo) {
+          locationArray[i].uploaded = true;
+          curated.push(locationArray[i]);
+        }
+      }
+
+      SetStoreData('LOCATION_DATA', curated);
+    });
+  }
+
   saveLocation(location) {
     // Persist this location data in our local storage of time/lat/lon values
     this.getLocationData().then(locationArray => {
@@ -83,6 +105,7 @@ export class LocationData {
         latitude: location['latitude'],
         longitude: location['longitude'],
         time: unixtimeUTC,
+        uploaded: false,
       };
       curated.push(lat_lon_time);
 
@@ -116,9 +139,9 @@ export default class LocationServices {
       desiredAccuracy: BackgroundGeolocation.HIGH_ACCURACY,
       stationaryRadius: 5,
       distanceFilter: 5,
-      notificationTitle: 'Private Kit Enabled',
+      notificationTitle: 'Stop COVID Enabled',
       notificationText:
-        'Private Kit is securely storing your GPS coordinates once every five minutes on this device.',
+        'Stop COVID is securely storing your GPS coordinates once every five minutes on this device.',
       debug: false, // when true, it beeps every time a loc is read
       startOnBoot: true,
       stopOnTerminate: false,
@@ -206,7 +229,7 @@ export default class LocationServices {
         setTimeout(
           () =>
             Alert.alert(
-              'Private Kit requires access to location information',
+              'Stop COVID requires access to location information',
               'Would you like to open app settings?',
               [
                 {
@@ -253,7 +276,7 @@ export default class LocationServices {
     BackgroundGeolocation.on('stop', () => {
       PushNotification.localNotification({
         title: 'Location Tracking Was Disabled',
-        message: 'Private Kit requires location services.',
+        message: 'Stop COVID requires location services.',
       });
       console.log('[INFO] stop');
     });
@@ -282,7 +305,7 @@ export default class LocationServices {
         setTimeout(
           () =>
             Alert.alert(
-              'Private Kit requires location services to be enabled',
+              'Stop COVID requires location services to be enabled',
               'Would you like to open location settings?',
               [
                 {
@@ -309,7 +332,7 @@ export default class LocationServices {
         setTimeout(
           () =>
             Alert.alert(
-              'Private Kit requires access to location information',
+              'Stop COVID requires access to location information',
               'Would you like to open app settings?',
               [
                 {
@@ -338,7 +361,7 @@ export default class LocationServices {
     // unregister all event listeners
     PushNotification.localNotification({
       title: 'Location Tracking Was Disabled',
-      message: 'Private Kit requires location services.',
+      message: 'Stop COVID requires location services.',
     });
     BackgroundGeolocation.removeAllListeners();
     BackgroundGeolocation.stop();

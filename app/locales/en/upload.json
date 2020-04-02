@@ -7,5 +7,6 @@
     "upload_description_1_1": "without any personal information included.",
     "upload_description_2_0": "Your name and other personal information ",
     "upload_description_2_1": "will not ",
-    "upload_description_2_2": "be shared, only location data."
+    "upload_description_2_2": "be shared, only location data.",
+    "upload_success": "Sharing completed"
 }

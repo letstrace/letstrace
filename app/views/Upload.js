@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import {
+  Alert,
   SafeAreaView,
   StyleSheet,
   View,
@@ -8,6 +9,7 @@ import {
   Platform,
   Dimensions,
   TouchableOpacity,
+  ActivityIndicator,
   BackHandler,
 } from 'react-native';
 import PropTypes from 'prop-types';
@@ -22,47 +24,101 @@ import backArrow from './../assets/images/backArrow.png';
 import languages from './../locales/languages';
 import ButtonWrapper from '../components/ButtonWrapper';
 import FontWeights from '../constants/fontWeights';
+import LinearGradient from 'react-native-linear-gradient';
 
 const width = Dimensions.get('window').width;
 const base64 = RNFetchBlob.base64;
 
-function ExportScreen({ shareButtonDisabled }) {
-  const [pointStats, setPointStats] = useState(false);
-  const [buttonDisabled, setButtonDisabled] = useState(shareButtonDisabled);
-  const { navigate } = useNavigation();
+class UploadScreen extends Component {
+  constructor(props) {
+    super(props);
 
-  function handleBackPress() {
-    navigate('LocationTrackingScreen', {});
+    this.state = {
+      isLoading: false,
+    };
+  }
+
+  componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+  }
+
+  handleBackPress() {
+    this.props.navigation.goBack();
     return true;
   }
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const locationData = new LocationData();
-      locationData.getPointStats().then(pointStats => {
-        setPointStats(pointStats);
-        setButtonDisabled(pointStats.pointCount === 0);
-      });
-      return () => { };
-    }, []),
-  );
-
-  useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-
-    return function cleanup() {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
-    };
-  });
-
-  function backToMain() {
-    navigate('LocationTrackingScreen', {});
-  }
-
-  async function onShare() {
+  async onShare() {
     try {
-      let locationData = await new LocationData().getLocationData();
-      console.log(locationData);
+      this.setState({
+        isLoading: true,
+      });
+      const location = new LocationData();
+      const locationData = await location.getLocationData();
+      const dataToUpload = [];
+      locationData.forEach(element => {
+        if (!element.uploaded) {
+          dataToUpload.push({
+            latitude: element.latitude,
+            longitude: element.longitude,
+            time: element.time,
+          });
+        }
+      });
+      // locationData.filter(location => !location.uploaded);
+      console.log(dataToUpload);
+      if (dataToUpload.length === 0) {
+        this.setState({
+          isLoading: false,
+        });
+        Alert.alert(languages.t('label.upload_success'), '', [
+          {
+            text: languages.t('label.home_ok'),
+            onPress: () => {},
+          },
+        ]);
+        return;
+      }
+      const data = {
+        points: dataToUpload,
+      };
+      try {
+        let response = await fetch('https://stopcovidusa.org/api/v1/track', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+        if (response.status >= 200 && response.status < 300) {
+          location.markLocationAsUploaded();
+          let json = await response.json();
+          console.log(json);
+          this.setState({
+            isLoading: false,
+          });
+          Alert.alert(languages.t('label.upload_success'), '', [
+            {
+              text: languages.t('label.home_ok'),
+              onPress: () => {},
+            },
+          ]);
+        }
+      } catch (errors) {
+        this.setState({
+          isLoading: false,
+        });
+        Alert.alert(errors.message, '', [
+          {
+            text: languages.t('label.home_ok'),
+            onPress: () => {},
+          },
+        ]);
+      }
     } catch (error) {
       console.log(error.message);
     }
@@ -79,39 +135,71 @@ function ExportScreen({ shareButtonDisabled }) {
         </Text>
         <Text style={styles.textSection}>
           <Text>{languages.t('label.upload_description_1_0')}</Text>
-          <Text style={{ fontWeight: FontWeights.BOLD, color: 'black' }}>{languages.t('label.upload_description_1_1')}</Text>
+          <Text style={{ fontWeight: FontWeights.BOLD, color: 'black' }}>
+            {languages.t('label.upload_description_1_1')}
+          </Text>
         </Text>
         <Text style={styles.textSection}>
           <Text>{languages.t('label.upload_description_2_0')}</Text>
-          <Text style={{ fontWeight: FontWeights.BOLD, color: 'black' }}>{languages.t('label.upload_description_2_1')}</Text>
+          <Text style={{ fontWeight: FontWeights.BOLD, color: 'black' }}>
+            {languages.t('label.upload_description_2_1')}
+          </Text>
           <Text>{languages.t('label.upload_description_2_2')}</Text>
         </Text>
       </View>
     );
+  };
+
+  getLoading() {
+    if (!this.state.isLoading) {
+      return;
+    }
+    return (
+      <View style={styles.loading} pointerEvents={'none'}>
+        <ActivityIndicator size="small" color='#ffffff' />
+      </View>
+    );
   }
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.backArrowTouchable}
-          onPress={() => backToMain()}>
-          <Image style={styles.backArrow} source={backArrow} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{languages.t('label.upload_navigation_title')}</Text>
-      </View>
+  render() {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            style={styles.backArrowTouchable}
+            onPress={() => this.handleBackPress()}>
+            <Image style={styles.backArrow} source={backArrow} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>
+            {languages.t('label.upload_navigation_title')}
+          </Text>
+        </View>
 
-      <View style={styles.main}>
-        {this.getTextComponent()}
-        <ButtonWrapper
-          title={languages.t('label.upload_share_info')}
-          onPress={onShare}
-          bgColor={Colors.RED_BUTTON}
-          toBgColor={Colors.RED_TO_BUTTON}
-        />
-      </View>
-    </SafeAreaView>
-  );
+        <View style={styles.main}>
+          {this.getTextComponent()}
+          <View style={styles.buttonWrapperContainer}>
+            {this.getLoading()}
+            <LinearGradient
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              colors={[Colors.RED_BUTTON, Colors.RED_TO_BUTTON]}
+              style={styles.buttonContainer}>
+              <TouchableOpacity
+                disabled={this.state.isLoading}
+                style={styles.buttonContainer}
+                onPress={() => {
+                  this.onShare();
+                }}>
+                <Text style={styles.primaryButtonText}>
+                  {this.state.isLoading ? '' : languages.t('label.upload_share_info')}
+                </Text>
+              </TouchableOpacity>
+            </LinearGradient>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -121,6 +209,39 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     color: Colors.PRIMARY_TEXT,
     backgroundColor: Colors.WHITE,
+  },
+  primaryButtonText: {
+    fontWeight: FontWeights.BOLD,
+    fontSize: 16,
+    lineHeight: 19,
+    letterSpacing: 0,
+    textAlign: 'center',
+    color: '#ffffff',
+  },
+  buttonWrapperContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: width * 0.7,
+    alignSelf: 'center',
+    height: 50,
+  },
+  buttonContainer: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderColor: 'rgba(255,255,255,0.7)',
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 100
   },
   headerTitle: {
     textAlign: 'center',
@@ -146,17 +267,17 @@ const styles = StyleSheet.create({
   textContainer: {
     alignSelf: 'center',
     width: width * 0.8,
-    marginBottom: '20%'
+    marginBottom: '20%',
   },
   textTitle: {
     fontSize: 24,
     fontWeight: FontWeights.SEMIBOLD,
-    marginVertical: '3%'
+    marginVertical: '3%',
   },
   textSection: {
     color: '#6A6A6A',
     fontSize: 16,
-    marginVertical: '3%'
+    marginVertical: '3%',
   },
   buttonTouchable: {
     borderRadius: 12,
@@ -217,12 +338,4 @@ const styles = StyleSheet.create({
   },
 });
 
-ExportScreen.propTypes = {
-  shareButtonDisabled: PropTypes.bool,
-};
-
-ExportScreen.defaultProps = {
-  shareButtonDisabled: true,
-};
-
-export default ExportScreen;
+export default UploadScreen;
