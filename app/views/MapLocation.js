@@ -8,6 +8,7 @@ import {
   ImageBackground,
   StatusBar,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import {
   check,
@@ -210,6 +211,8 @@ class MapLocation extends Component {
     this.getDeviceLocations();
 
     this.backToMain = this.backToMain.bind(this);
+    this.renderHeader = this.renderHeader.bind(this);
+    this.renderContent = this.renderContent.bind(this);
   }
 
   backToMain() {
@@ -340,12 +343,48 @@ class MapLocation extends Component {
   }
 
   renderHeader() {
-    return (
+    const iconSize = 30;
+    const circleSize = iconSize * 1.5;
+    return (<>
+      <View style={{
+        margin: 5,
+        width: circleSize,
+        alignSelf: 'flex-end',
+        position: 'absolute',
+        bottom: circleSize,
+        right: 6
+      }}>
+        <TouchableOpacity
+          onPress={() => {
+            this.setState({ region: this.state.region });
+          }}
+          style={{
+            borderWidth: 1,
+            borderColor: Colors.WHITE,
+            backgroundColor: Colors.WHITE,
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: circleSize,
+            height: circleSize,
+            borderRadius: circleSize / 2,
+          }}>
+          <SvgXml
+            xml={mapCurrentLocationIcon}
+            style={{
+              alignSelf: 'center',
+            }}
+            width={iconSize}
+            height={iconSize}
+          />
+
+        </TouchableOpacity>
+      </View>
       <View style={styles.bsHeader}>
         <View style={styles.bsHeaderIndicatorContainer}>
           <View style={styles.bsHeaderIndicator} />
         </View>
       </View>
+    </>
     );
   }
 
@@ -381,7 +420,7 @@ class MapLocation extends Component {
             ref={this.bottomSheet}
             snapPoints={['30%']}
             initialSnap={0}
-            renderContent={this.renderContent.bind(this)}
+            renderContent={this.renderContent}
             renderHeader={this.renderHeader}
           />
         </View>
