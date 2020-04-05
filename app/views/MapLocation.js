@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ImageBackground,
   StatusBar,
+  ScrollView,
 } from 'react-native';
 import {
   check,
@@ -32,8 +33,15 @@ import BottomSheet from 'reanimated-bottom-sheet';
 import { SvgXml } from 'react-native-svg';
 import fontFamily from '../constants/fonts';
 import LocationServices, { LocationData } from '../services/LocationService';
+import NavigationBarWrapper from '../components/NavigationBarWrapper';
+import mapCurrentLocationIcon from './../assets/svgs/map-current-location';
+import mapSmallMarkerIcon from './../assets/svgs/map-small-marker';
 
 const width = Dimensions.get('window').width;
+
+const str = (text) => {
+  return languages.t(`map.${text}`);
+}
 
 const InitialRegion = {
   latitude: 35.692863,
@@ -42,24 +50,143 @@ const InitialRegion = {
   longitudeDelta: 55,
 };
 
-const BSDateSectionRow = ({ prefixTitle, title }) => {
+const covertToDate = time => {
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  const datetime = new Date(time);
+  const month = monthNames[datetime.getMonth()];
+  const date = datetime.getDate();
+  const year = datetime.getFullYear();
+  return `${month} ${date}, ${year}`;
+};
+
+const BSDivider = ({ style }) => {
   return (
-    <View style={styles.BSDateSectionRow}>
-      <Text>
-        <Text
-          style={{
-            color: Colors.BLACK,
-          }}>{`${prefixTitle} `}</Text>
-        <Text
-          style={{
-            color: Colors.VIOLET_TEXT,
-          }}>
-          {title}
-        </Text>
-      </Text>
-    </View>
+    <View
+      style={[style, {
+        backgroundColor: Colors.DIVIDER,
+        height: 1.5,
+      }]} />
   );
 };
+
+const BSDateDetailSectionHeader = ({ prefixTitle, title }) => {
+  const prefix = (text) => {
+    if (prefixTitle) {
+      return (
+        <Text
+          style={{
+            fontSize: 20,
+            fontFamily: fontFamily.primaryMedium,
+            color: Colors.BLACK,
+          }}>{`${text} `}</Text>
+      );
+    }
+  };
+
+  return (
+    <>
+      <View style={{
+        margin: '3%',
+      }}>
+        <Text style={{
+          flex: 1
+        }}>
+          {prefix(prefixTitle)}
+          <Text
+            style={{
+              fontSize: 20,
+              fontFamily: fontFamily.primaryMedium,
+              color: Colors.VIOLET_TEXT,
+            }}>
+            {title}
+          </Text>
+        </Text>
+      </View>
+      <BSDivider />
+    </>
+  );
+};
+
+const BSDateDetailSectionRow = ({ showIcon, title, date, showDivider }) => {
+  const iconSize = 25;
+  const icon = (showIcon) => {
+    if (showIcon) {
+      return (
+        <SvgXml
+          xml={mapSmallMarkerIcon}
+          style={{
+            alignSelf: 'center',
+          }}
+          width={iconSize}
+          height={iconSize}
+        />
+      );
+    }
+
+  };
+  return (
+    <>
+      <View style={{
+        marginVertical: '3%',
+        marginRight: '3%',
+      }}>
+        <View style={{
+          flex: 1,
+          width: '100%',
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}>
+          <View style={{
+            width: iconSize,
+            height: iconSize,
+          }}>
+            {icon(showIcon)}
+          </View>
+          <View style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            maxWidth: '100%',
+          }}>
+            <Text style={{
+              fontSize: 12,
+              fontFamily: fontFamily.primaryMedium,
+              color: Colors.BLACK,
+              alignSelf: 'center',
+              flex: 1,
+            }}>{title}</Text>
+            <Text style={{
+              fontSize: 12,
+              fontFamily: fontFamily.primaryMedium,
+              color: Colors.GRAY_TEXT,
+              alignSelf: 'center',
+              paddingLeft: '2%',
+            }}>{date}</Text>
+          </View>
+        </View>
+      </View>
+      {showDivider && <BSDivider
+        style={{
+          marginLeft: iconSize
+        }}
+      />}
+    </>
+  );
+};
+
 
 class MapLocation extends Component {
   map = React.createRef();
@@ -67,11 +194,6 @@ class MapLocation extends Component {
 
   constructor(props) {
     super(props);
-    this.props.navigation.setOptions({
-      headerShown: true,
-      title: 'Map',
-      headerBackTitle: '',
-    });
     this.state = {
       region: InitialRegion,
       fullLocationData: [],
@@ -86,6 +208,12 @@ class MapLocation extends Component {
     );
 
     this.getDeviceLocations();
+
+    this.backToMain = this.backToMain.bind(this);
+  }
+
+  backToMain() {
+    this.props.navigation.goBack();
   }
 
   async getDeviceLocations() {
@@ -124,35 +252,61 @@ class MapLocation extends Component {
         region: {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-          latitudeDelta: 0.1,
-          longitudeDelta: 0.1,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
         },
       });
     }
   }
 
-  renderContent() {
-    const covertToDate = time => {
-      const monthNames = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
-      ];
-      const datetime = new Date(time);
-      const month = monthNames[datetime.getMonth()];
-      const date = datetime.getDate();
-      const year = datetime.getFullYear();
-      return `${month} ${date}, ${year}`;
+  getTodayYesterdayDate() {
+    const currentTime = new Date();
+    const today = covertToDate(Date.parse(currentTime));
+    currentTime.setDate(currentTime.getDate() - 1)
+    const yesterday = covertToDate(Date.parse(currentTime));
+    return {
+      today,
+      yesterday
+    }
+  }
+
+  getBottomSheetDateDetailContent(dates, allDates) {
+    const { today, yesterday } = this.getTodayYesterdayDate();
+    const getPrefixTitle = (date) => {
+      if (date === today) {
+        return str('today');
+      } else if (date === yesterday) {
+        return str('yesterday');
+      }
+    }
+
+    const getChildren = (date) => {
+      const getDate = date => (new Date(date)).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+      const allPoints = allDates[date];
+      if (allPoints && allPoints.length) {
+        const toRender = [];
+        for (let i = 0; i < allPoints.length; i++) {
+          const point = allPoints[i];
+          toRender.push(<BSDateDetailSectionRow
+            showIcon={i === 0}
+            title={str('place_you_been')}
+            date={getDate(point.time)}
+            showDivider={i !== allPoints.length - 1}
+          />);
+        }
+        return toRender;
+      }
     };
+
+    return dates.map((date) => {
+      return (<>
+        <BSDateDetailSectionHeader prefixTitle={getPrefixTitle(date)} title={date} />
+        {getChildren(date)}
+      </>);
+    });
+  }
+
+  renderContent() {
     const dates = [];
     const points = {};
     for (let location of this.state.fullLocationData) {
@@ -167,8 +321,9 @@ class MapLocation extends Component {
 
     return (
       <View style={styles.bsMainContainer}>
-        <Text>some content</Text>
-        <BSDateSectionRow prefixTitle={'test'} title={'test'} />
+        <ScrollView>
+          {this.getBottomSheetDateDetailContent(dates, points)}
+        </ScrollView>
       </View>
     );
   }
@@ -185,7 +340,9 @@ class MapLocation extends Component {
 
   render() {
     return (
-      <>
+      <NavigationBarWrapper
+        title={str('map')}
+        onBackPress={this.backToMain}>
         <StatusBar
           barStyle='dark-content'
           backgroundColor='transparent'
@@ -222,7 +379,7 @@ class MapLocation extends Component {
             renderHeader={this.renderHeader}
           />
         </View>
-      </>
+      </NavigationBarWrapper>
     );
   }
 }
@@ -236,7 +393,8 @@ const styles = StyleSheet.create({
   },
   bsHeader: {
     backgroundColor: Colors.WHITE,
-    paddingTop: 6,
+    paddingTop: 18,
+    paddingBottom: 8,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
   },

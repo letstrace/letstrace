@@ -5,7 +5,6 @@ import {
   createStackNavigator,
   CardStyleInterpolators,
 } from '@react-navigation/stack';
-import { SafeAreaView } from 'react-native';
 import LocationTracking from './views/LocationTracking';
 import NewsScreen from './views/News';
 import ExportScreen from './views/Export';
@@ -46,6 +45,23 @@ class Entry extends Component {
       .catch(error => console.log(error));
   }
 
+  getInitialRoute() {
+    if (this.state.initialRouteName === 'true') {
+      return (
+        <Stack.Screen
+          name='InitialScreen'
+          component={LocationTracking}
+          options={{ headerShown: false }}
+        />);
+    }
+    return (
+      <Stack.Screen
+        name='InitialScreen'
+        component={Onboarding1}
+        options={{ headerShown: false }}
+      />);
+  }
+
   render() {
     return (
       <NavigationContainer>
@@ -57,19 +73,7 @@ class Entry extends Component {
               backgroundColor: 'transparent', // prevent white flash on Android
             },
           }}>
-          {this.state.initialRouteName === 'true' ? (
-            <Stack.Screen
-              name='InitialScreen'
-              component={LocationTracking}
-              options={{ headerShown: false }}
-            />
-          ) : (
-            <Stack.Screen
-              name='InitialScreen'
-              component={Onboarding1}
-              options={{ headerShown: false }}
-            />
-          )}
+          {this.getInitialRoute()}
           <Stack.Screen
             name='Onboarding1'
             component={Onboarding1}

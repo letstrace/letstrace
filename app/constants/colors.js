@@ -23,8 +23,6 @@ const colors = {
   VIOLET_BUTTON: '#6979F8',
   VIOLET_BUTTON_DARK: '#3A4CD7',
 
-  VIOLET_TEXT: '#6979F8',
-
   GRAY_BACKGROUND: '#DADADA',
 
   INTRO_WHITE_BG: '#F7F8FF',
@@ -47,6 +45,7 @@ const colors = {
 
   VIOLET_TEXT: '#3C4ED8',
   RED_TEXT: '#FF5656',
+  GRAY_TEXT: '#C4C4C4',
 
   NAV_BAR_VIOLET: '#5061E6',
   NAV_BAR_BORDER: 'rgba(189, 195, 199,0.6)',

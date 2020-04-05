@@ -11,6 +11,7 @@ import settingsFile from './settingsScreen.json';
 import pushFile from './push.json';
 import aboutFile from './about.json';
 import chooseProviderFile from './chooseProvider.json';
+import mapLocationFile from './mapLocation.json';
 
 export default {
   ...intro,
@@ -26,4 +27,8 @@ export default {
   ...pushFile,
   ...aboutFile,
   ...chooseProviderFile,
+};
+
+export let language = {
+  map: { ...mapLocationFile }
 };
