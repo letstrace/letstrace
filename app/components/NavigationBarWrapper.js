@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   },
   bottomSafeAreaContainer: {
     flex: 1,
-    backgroundColor: Colors.INTRO_WHITE_BG,
+    backgroundColor: Colors.TRANSPARENT,
   },
   headerContainer: {
     flexDirection: 'row',

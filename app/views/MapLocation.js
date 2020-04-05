@@ -77,7 +77,7 @@ const BSDivider = ({ style }) => {
     <View
       style={[style, {
         backgroundColor: Colors.DIVIDER,
-        height: 1.5,
+        height: 1,
       }]} />
   );
 };
@@ -162,14 +162,14 @@ const BSDateDetailSectionRow = ({ showIcon, title, date, showDivider }) => {
             maxWidth: '100%',
           }}>
             <Text style={{
-              fontSize: 12,
+              fontSize: 14,
               fontFamily: fontFamily.primaryMedium,
               color: Colors.BLACK,
               alignSelf: 'center',
               flex: 1,
             }}>{title}</Text>
             <Text style={{
-              fontSize: 12,
+              fontSize: 14,
               fontFamily: fontFamily.primaryMedium,
               color: Colors.GRAY_TEXT,
               alignSelf: 'center',
@@ -287,22 +287,25 @@ class MapLocation extends Component {
         const toRender = [];
         for (let i = 0; i < allPoints.length; i++) {
           const point = allPoints[i];
-          toRender.push(<BSDateDetailSectionRow
-            showIcon={i === 0}
-            title={str('place_you_been')}
-            date={getDate(point.time)}
-            showDivider={i !== allPoints.length - 1}
-          />);
+          toRender.push(<View key={`row_${i}`}>
+            <BSDateDetailSectionRow
+              showIcon={i === 0}
+              title={str('place_you_been')}
+              date={getDate(point.time)}
+              showDivider={i !== allPoints.length - 1}
+            />
+          </View>);
         }
         return toRender;
       }
     };
 
     return dates.map((date) => {
-      return (<>
-        <BSDateDetailSectionHeader prefixTitle={getPrefixTitle(date)} title={date} />
-        {getChildren(date)}
-      </>);
+      return (
+        <View key={date}>
+          <BSDateDetailSectionHeader prefixTitle={getPrefixTitle(date)} title={date} />
+          {getChildren(date)}
+        </View>);
     });
   }
 
@@ -320,9 +323,17 @@ class MapLocation extends Component {
     }
 
     return (
-      <View style={styles.bsMainContainer}>
-        <ScrollView>
-          {this.getBottomSheetDateDetailContent(dates, points)}
+      <View onLayout={this.onLayoutContent} style={{
+        backgroundColor: Colors.WHITE,
+        height: '100%',
+      }}>
+        <ScrollView style={{
+          flex: 1,
+          backgroundColor: Colors.WHITE,
+        }}>
+          <View style={{ marginHorizontal: '4%' }}>
+            {this.getBottomSheetDateDetailContent(dates, points)}
+          </View>
         </ScrollView>
       </View>
     );
@@ -343,11 +354,6 @@ class MapLocation extends Component {
       <NavigationBarWrapper
         title={str('map')}
         onBackPress={this.backToMain}>
-        <StatusBar
-          barStyle='dark-content'
-          backgroundColor='transparent'
-          translucent
-        />
         <View style={styles.mainContainer}>
           <MapView
             ref={this.map}
@@ -364,7 +370,7 @@ class MapLocation extends Component {
               <Circle
                 key={circle.key}
                 center={circle.center}
-                radius={2}
+                radius={3}
                 lineJoin='round'
                 strokeColor={Colors.MAP_LINE_STROKE}
                 fillColor={Colors.MAP_LINE_STROKE}
@@ -372,9 +378,9 @@ class MapLocation extends Component {
             ))}
           </MapView>
           <BottomSheet
-            ref={this.bs}
-            snapPoints={['60%', '30%']}
-            initialSnap={1}
+            ref={this.bottomSheet}
+            snapPoints={['30%']}
+            initialSnap={0}
             renderContent={this.renderContent.bind(this)}
             renderHeader={this.renderHeader}
           />
@@ -407,11 +413,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: Colors.BOTTOM_SHEET_HEADER_INDICATOR,
     marginBottom: 8,
-  },
-  bsMainContainer: {
-    backgroundColor: Colors.WHITE,
-    height: '100%',
-    padding: '2%',
   },
 });
 
