@@ -145,7 +145,6 @@ const BSDateDetailSectionRow = ({ showIcon, title, date, showDivider }) => {
         marginRight: '3%',
       }}>
         <View style={{
-          flex: 1,
           width: '100%',
           flexDirection: 'row',
           alignItems: 'center',
@@ -331,7 +330,6 @@ class MapLocation extends Component {
         height: '100%',
       }}>
         <ScrollView style={{
-          flex: 1,
           backgroundColor: Colors.WHITE,
         }}>
           <View style={{ marginHorizontal: '4%' }}>
@@ -343,8 +341,8 @@ class MapLocation extends Component {
   }
 
   renderHeader() {
-    const iconSize = 30;
-    const circleSize = iconSize * 1.5;
+    const iconSize = 25;
+    const circleSize = iconSize * 1.8;
     return (<>
       <View style={{
         margin: 5,
@@ -367,6 +365,9 @@ class MapLocation extends Component {
             width: circleSize,
             height: circleSize,
             borderRadius: circleSize / 2,
+            shadowOffset: { width: 0, height: 4, },
+            shadowColor: Colors.PURPLE_SHADOW,
+            shadowOpacity: 0.3,
           }}>
           <SvgXml
             xml={mapCurrentLocationIcon}
@@ -376,7 +377,6 @@ class MapLocation extends Component {
             width={iconSize}
             height={iconSize}
           />
-
         </TouchableOpacity>
       </View>
       <View style={styles.bsHeader}>
@@ -418,7 +418,7 @@ class MapLocation extends Component {
           </MapView>
           <BottomSheet
             ref={this.bottomSheet}
-            snapPoints={['30%']}
+            snapPoints={['35%']}
             initialSnap={0}
             renderContent={this.renderContent}
             renderHeader={this.renderHeader}

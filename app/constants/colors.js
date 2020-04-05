@@ -26,6 +26,8 @@ const colors = {
 
   GRAY_BACKGROUND: '#DADADA',
 
+  PURPLE_SHADOW: '#2434B6',
+
   INTRO_WHITE_BG: '#F7F8FF',
   PULSE_WHITE: '#FFFFFF40',
 
