@@ -23,7 +23,41 @@ export class LocationData {
         locationArray = JSON.parse(locationArrayString);
       }
 
-      return locationArray;
+      //return locationArray;
+
+      return [
+        { latitude: 37.355935, longitude: -122.011161, time: 1586118827717 },
+        { latitude: 37.333035, longitude: -122.012119, time: 1586118827716 },
+        { latitude: 37.337524, longitude: -122.013767, time: 1586117927717 },
+        { latitude: 37.336057, longitude: -122.013853, time: 1586114327717 },
+        { latitude: 37.333387, longitude: -122.013821, time: 1586111927717 },
+        { latitude: 37.331101, longitude: -122.013564, time: 1586109527717 },
+        { latitude: 37.329557, longitude: -122.009348, time: 1586095127717 },
+        { latitude: 37.333379, longitude: -122.011247, time: 1586080727717 },
+        { latitude: 37.331912, longitude: -122.004177, time: 1586066327717 },
+        { latitude: 37.328278, longitude: -122.002525, time: 1586051927717 },
+        { latitude: 37.331016, longitude: -122.000326, time: 1586037527717 },
+        { latitude: 37.333184, longitude: -122.002362, time: 1586023127717 },
+        { latitude: 37.334184, longitude: -122.002362, time: 1586008727717 },
+        { latitude: 37.336184, longitude: -122.002362, time: 1585994327717 },
+        { latitude: 37.336114, longitude: -122.002312, time: 1585994327718 },
+        { latitude: 37.338184, longitude: -122.002362, time: 1585979927717 },
+        { latitude: 37.331184, longitude: -122.019362, time: 1585907927716 },
+        { latitude: 37.330184, longitude: -122.013362, time: 1585907927715 },
+        { latitude: 37.338184, longitude: -122.012362, time: 1585907927717 },
+        { latitude: 37.338184, longitude: -122.092362, time: 1585835927717 },
+        { latitude: 37.338184, longitude: -122.049362, time: 1585763927717 },
+        { latitude: 37.338184, longitude: -122.024362, time: 1585749527717 },
+        { latitude: 37.338184, longitude: -122.029362, time: 1585735127717 },
+        { latitude: 37.338184, longitude: -122.059362, time: 1585720727717 },
+        { latitude: 37.330184, longitude: -122.058362, time: 1585691927717 },
+        { latitude: 37.330184, longitude: -122.058362, time: 1585591927717 },
+        { latitude: 37.330184, longitude: -122.058362, time: 1585491927717 },
+        { latitude: 37.330184, longitude: -122.058362, time: 1585441927717 },
+        { latitude: 37.330184, longitude: -122.058362, time: 1585391927717 },
+        { latitude: 37.330184, longitude: -122.058362, time: 1585331927717 },
+        { latitude: 37.330184, longitude: -122.058362, time: 1585291927717 },
+      ];
     });
   }
 

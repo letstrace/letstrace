@@ -8,11 +8,7 @@ import {
 } from 'react-native';
 import languages from '../locales/languages';
 import Colors from '../constants/colors';
-import MapView, {
-  PROVIDER_GOOGLE,
-  Polyline,
-  Marker,
-} from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Polyline, Marker } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import BottomSheet from 'reanimated-bottom-sheet';
 import { SvgXml } from 'react-native-svg';
@@ -22,9 +18,9 @@ import NavigationBarWrapper from '../components/NavigationBarWrapper';
 import mapCurrentLocationIcon from './../assets/svgs/map-current-location';
 import mapSmallMarkerIcon from './../assets/svgs/map-small-marker';
 
-const str = (text) => {
+const str = text => {
   return languages.t(`map.${text}`);
-}
+};
 
 const RegionDelta = 0.05;
 
@@ -81,15 +77,19 @@ const covertToSimpleDate = time => {
 const BSDivider = ({ style }) => {
   return (
     <View
-      style={[style, {
-        backgroundColor: Colors.DIVIDER,
-        height: 1,
-      }]} />
+      style={[
+        style,
+        {
+          backgroundColor: Colors.DIVIDER,
+          height: 1,
+        },
+      ]}
+    />
   );
 };
 
 const BSDateDetailSectionHeader = ({ prefixTitle, title }) => {
-  const prefix = (text) => {
+  const prefix = text => {
     if (prefixTitle) {
       return (
         <Text
@@ -104,12 +104,14 @@ const BSDateDetailSectionHeader = ({ prefixTitle, title }) => {
 
   return (
     <>
-      <View style={{
-        margin: '3%',
-      }}>
-        <Text style={{
-          flex: 1
+      <View
+        style={{
+          margin: '3%',
         }}>
+        <Text
+          style={{
+            flex: 1,
+          }}>
           {prefix(prefixTitle)}
           <Text
             style={{
@@ -127,19 +129,21 @@ const BSDateDetailSectionHeader = ({ prefixTitle, title }) => {
 };
 
 const BubbleType = {
-  selected: Colors.VIOLET_BUTTON_DARK,
-  unselected: Colors.VIOLET_BUTTON,
+  selected: Colors.VIOLET_BUTTON,
+  unselected: Colors.VIOLET_BUTTON_LIGHT,
   future: Colors.GRAY_BACKGROUND,
 };
 
 const BSDateBubble = ({ type, date, action }) => {
-  const circleSize = 50;
+  const circleSize = 42;
   const [month, day] = date.split(' ');
   return (
     <TouchableOpacity
-      onPress={() => { action(date) }}
+      onPress={() => {
+        action(date);
+      }}
       style={{
-        marginHorizontal: 15,
+        marginHorizontal: 9,
         borderWidth: 1,
         borderColor: type,
         backgroundColor: type,
@@ -149,23 +153,29 @@ const BSDateBubble = ({ type, date, action }) => {
         height: circleSize,
         borderRadius: circleSize / 2,
       }}>
-      <Text style={{
-        color: Colors.WHITE,
-        fontSize: 15,
-        fontFamily: fontFamily.primaryMedium,
-      }}>{month}</Text>
-      <Text style={{
-        color: Colors.WHITE,
-        fontSize: 15,
-        fontFamily: fontFamily.primaryMedium,
-      }}>{day}</Text>
+      <Text
+        style={{
+          color: Colors.WHITE,
+          fontSize: 12,
+          fontFamily: fontFamily.primaryMedium,
+        }}>
+        {month}
+      </Text>
+      <Text
+        style={{
+          color: Colors.WHITE,
+          fontSize: 15,
+          fontFamily: fontFamily.primaryMedium,
+        }}>
+        {day}
+      </Text>
     </TouchableOpacity>
   );
 };
 
 const BSDateDetailSectionRow = ({ showIcon, title, date, showDivider }) => {
   const iconSize = 25;
-  const icon = (showIcon) => {
+  const icon = showIcon => {
     if (showIcon) {
       return (
         <SvgXml
@@ -178,57 +188,67 @@ const BSDateDetailSectionRow = ({ showIcon, title, date, showDivider }) => {
         />
       );
     }
-
   };
   return (
     <>
-      <View style={{
-        marginVertical: '3%',
-        marginRight: '3%',
-      }}>
-        <View style={{
-          width: '100%',
-          flexDirection: 'row',
-          alignItems: 'center',
+      <View
+        style={{
+          marginVertical: '3%',
+          marginRight: '3%',
         }}>
-          <View style={{
-            width: iconSize,
-            height: iconSize,
+        <View
+          style={{
+            width: '100%',
+            flexDirection: 'row',
+            alignItems: 'center',
           }}>
+          <View
+            style={{
+              width: iconSize,
+              height: iconSize,
+            }}>
             {icon(showIcon)}
           </View>
-          <View style={{
-            flex: 1,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            maxWidth: '100%',
-          }}>
-            <Text style={{
-              fontSize: 14,
-              fontFamily: fontFamily.primaryMedium,
-              color: Colors.BLACK,
-              alignSelf: 'center',
+          <View
+            style={{
               flex: 1,
-            }}>{title}</Text>
-            <Text style={{
-              fontSize: 14,
-              fontFamily: fontFamily.primaryMedium,
-              color: Colors.GRAY_TEXT,
-              alignSelf: 'center',
-              paddingLeft: '2%',
-            }}>{date}</Text>
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              maxWidth: '100%',
+            }}>
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: fontFamily.primaryMedium,
+                color: Colors.BLACK,
+                alignSelf: 'center',
+                flex: 1,
+              }}>
+              {title}
+            </Text>
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: fontFamily.primaryMedium,
+                color: Colors.GRAY_TEXT,
+                alignSelf: 'center',
+                paddingLeft: '2%',
+              }}>
+              {date}
+            </Text>
           </View>
         </View>
       </View>
-      {showDivider && <BSDivider
-        style={{
-          marginLeft: iconSize
-        }}
-      />}
+      {showDivider && (
+        <BSDivider
+          style={{
+            marginLeft: iconSize,
+          }}
+        />
+      )}
     </>
   );
 };
-
 
 class MapLocation extends Component {
   map = React.createRef();
@@ -242,7 +262,7 @@ class MapLocation extends Component {
       locationDataForLine: [],
       locationDataForMarker: [],
 
-      currentSelectedDate: covertToSimpleDate((new Date()).getTime())
+      currentSelectedDate: covertToSimpleDate(new Date().getTime()),
     };
     Geolocation.getCurrentPosition(
       this.getCurrentLocation.bind(this),
@@ -267,7 +287,12 @@ class MapLocation extends Component {
     if (!locationData) {
       return;
     }
-    const getDate = date => (new Date(date)).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    const getDate = date =>
+      new Date(date).toLocaleString('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+      });
     const locationDataForLine = [];
     const locationDataForMarker = [];
     for (let i = 0; i < locationData.length; i++) {
@@ -282,7 +307,7 @@ class MapLocation extends Component {
           latitude: location.latitude,
           longitude: location.longitude,
         },
-        time: getDate(location.time)
+        time: getDate(location.time),
       });
     }
     if (locationDataForLine.length === 1) {
@@ -328,72 +353,94 @@ class MapLocation extends Component {
   getTodayYesterdayDate() {
     const currentTime = new Date();
     const today = covertToDate(Date.parse(currentTime));
-    currentTime.setDate(currentTime.getDate() - 1)
+    currentTime.setDate(currentTime.getDate() - 1);
     const yesterday = covertToDate(Date.parse(currentTime));
     return {
       today,
-      yesterday
-    }
+      yesterday,
+    };
   }
 
   getBottomSheetDateDetailContent(dates, allDates) {
     const { today, yesterday } = this.getTodayYesterdayDate();
-    const getPrefixTitle = (date) => {
+    const getPrefixTitle = date => {
       if (date === today) {
         return str('today');
       } else if (date === yesterday) {
         return str('yesterday');
       }
-    }
+    };
 
-    const getChildren = (date) => {
-      const getDate = date => (new Date(date)).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    const getChildren = date => {
+      const getDate = date =>
+        new Date(date).toLocaleString('en-US', {
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true,
+        });
       const allPoints = allDates[date];
       if (allPoints && allPoints.length) {
         const toRender = [];
         for (let i = 0; i < allPoints.length; i++) {
           const point = allPoints[i];
-          toRender.push(<View key={`row_${i}`}>
-            <BSDateDetailSectionRow
-              showIcon={i === 0}
-              title={str('place_you_been')}
-              date={getDate(point.time)}
-              showDivider={i !== allPoints.length - 1}
-            />
-          </View>);
+          toRender.push(
+            <View key={`row_${i}`}>
+              <BSDateDetailSectionRow
+                showIcon={i === 0}
+                title={str('place_you_been')}
+                date={getDate(point.time)}
+                showDivider={i !== allPoints.length - 1}
+              />
+            </View>,
+          );
         }
         return toRender;
       }
     };
 
-    return dates.map((date) => {
+    return dates.map(date => {
       return (
         <View key={date}>
-          <BSDateDetailSectionHeader prefixTitle={getPrefixTitle(date)} title={date} />
+          <BSDateDetailSectionHeader
+            prefixTitle={getPrefixTitle(date)}
+            title={date}
+          />
           {getChildren(date)}
-        </View>);
+        </View>
+      );
     });
   }
 
   getBottomSheetDateBubbleContent(dates, points) {
+    // dates.reverse(); //
+    // this seems like a hack..
+    // but how to reverse order and scroll to last date?
     return (
       <FlatList
         horizontal
+        showsHorizontalScrollIndicator={false}
         data={dates}
         renderItem={({ item }) => {
           return (
             <BSDateBubble
-              type={this.state.currentSelectedDate === item ? BubbleType.selected : BubbleType.unselected}
+              type={
+                this.state.currentSelectedDate === item
+                  ? BubbleType.selected
+                  : BubbleType.unselected
+              }
               date={item}
-              action={(date) => {
+              action={date => {
                 if (this.state.currentSelectedDate === date) {
                   return;
                 }
                 this.setState({
-                  currentSelectedDate: date
+                  currentSelectedDate: date,
                 });
                 this.extractLocationsForMap(points[date]);
-                const lastPosition = points[date] && points[date].length && points[date][Math.floor(points[date].length / 2)];
+                const lastPosition =
+                  points[date] &&
+                  points[date].length &&
+                  points[date][Math.floor(points[date].length / 2)];
                 if (lastPosition) {
                   this.setState({
                     region: {
@@ -405,10 +452,12 @@ class MapLocation extends Component {
                   });
                 }
               }}
-            />);
+            />
+          );
         }}
         keyExtractor={date => date}
-      />);
+      />
+    );
   }
 
   renderContent() {
@@ -425,73 +474,92 @@ class MapLocation extends Component {
     }
 
     return (
-      <View onLayout={this.onLayoutContent} style={{
-        backgroundColor: Colors.WHITE,
-        height: '100%',
-      }}>
+      // <>
+      <View
+        onLayout={this.onLayoutContent}
+        style={{
+          backgroundColor: Colors.WHITE,
+          height: '100%',
+        }}>
         {this.getBottomSheetDateBubbleContent(dates, points)}
       </View>
+
+      // THE OLD TABLE VIEW
+      // BUT IT BREAKS IF BOTH ARE height: '100%'
+      //   <View onLayout={this.onLayoutContent} style={{
+      //     backgroundColor: Colors.WHITE,
+      //     height: '100%',
+      //   }}>
+      //     <View style={styles.placesListContainer}>
+      //       {this.getBottomSheetDateDetailContent(dates, points)}
+      //     </View>
+      //   </View>
+      // </>
     );
   }
 
   renderHeader() {
     const iconSize = 25;
     const circleSize = iconSize * 1.8;
-    return (<>
-      <View style={{
-        margin: 5,
-        width: circleSize,
-        alignSelf: 'flex-end',
-        position: 'absolute',
-        bottom: circleSize,
-        right: 6
-      }}>
-        <TouchableOpacity
-          onPress={() => {
-            Geolocation.getCurrentPosition(
-              this.getCurrentLocation,
-              error => {
-                console.log('get current position error: ' + JSON.stringify(error));
-              },
-            );
-          }}
+    return (
+      <>
+        <View
           style={{
-            borderWidth: 1,
-            borderColor: Colors.WHITE,
-            backgroundColor: Colors.WHITE,
-            alignItems: 'center',
-            justifyContent: 'center',
+            margin: 8,
             width: circleSize,
-            height: circleSize,
-            borderRadius: circleSize / 2,
-            shadowOffset: { width: 0, height: 4, },
-            shadowColor: Colors.PURPLE_SHADOW,
-            shadowOpacity: 0.3,
+            alignSelf: 'flex-end',
+            position: 'absolute',
+            bottom: circleSize,
+            right: 8,
           }}>
-          <SvgXml
-            xml={mapCurrentLocationIcon}
-            style={{
-              alignSelf: 'center',
+          <TouchableOpacity
+            onPress={() => {
+              Geolocation.getCurrentPosition(this.getCurrentLocation, error => {
+                console.log(
+                  'get current position error: ' + JSON.stringify(error),
+                );
+              });
             }}
-            width={iconSize}
-            height={iconSize}
-          />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.bsHeader}>
-        <View style={styles.bsHeaderIndicatorContainer}>
-          <View style={styles.bsHeaderIndicator} />
+            style={{
+              borderWidth: 1,
+              borderColor: Colors.WHITE,
+              backgroundColor: Colors.WHITE,
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: circleSize,
+              height: circleSize,
+              borderRadius: circleSize / 2,
+              shadowOffset: { width: 0, height: 4 },
+              shadowColor: Colors.PURPLE_SHADOW,
+              shadowOpacity: 0.3,
+            }}>
+            <SvgXml
+              xml={mapCurrentLocationIcon}
+              style={{
+                top: 1,
+                right: 1,
+                alignSelf: 'center',
+              }}
+              width={iconSize}
+              height={iconSize}
+            />
+          </TouchableOpacity>
         </View>
-      </View>
-    </>
+        <View style={styles.bsHeader}>
+          <View style={styles.bsHeaderIndicatorContainer}>
+            <View style={styles.bsHeaderIndicator} />
+          </View>
+        </View>
+      </>
     );
   }
 
   render() {
     return (
-      <NavigationBarWrapper
+      <>
+        {/* <NavigationBarWrapper
         title={str('map')}
-        onBackPress={this.backToMain}>
+        onBackPress={this.backToMain}> */}
         <View style={styles.mainContainer}>
           <MapView
             ref={this.map}
@@ -515,13 +583,14 @@ class MapLocation extends Component {
           </MapView>
           <BottomSheet
             ref={this.bottomSheet}
-            snapPoints={[100]}
+            snapPoints={[150]}
             initialSnap={0}
             renderContent={this.renderContent}
             renderHeader={this.renderHeader}
           />
         </View>
-      </NavigationBarWrapper>
+        {/* </NavigationBarWrapper> */}
+      </>
     );
   }
 }
@@ -544,11 +613,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bsHeaderIndicator: {
-    width: 40,
-    height: 6,
+    width: 80,
+    height: 4,
     borderRadius: 4,
     backgroundColor: Colors.BOTTOM_SHEET_HEADER_INDICATOR,
     marginBottom: 8,
+  },
+  placesListContainer: {
+    marginLeft: 21,
+    marginRight: 21,
   },
 });
 
