@@ -194,6 +194,7 @@ class MapLocation extends Component {
     this.backToMain = this.backToMain.bind(this);
     this.renderHeader = this.renderHeader.bind(this);
     this.renderContent = this.renderContent.bind(this);
+    this.getCurrentLocation = this.getCurrentLocation.bind(this);
   }
 
   backToMain() {
@@ -336,7 +337,12 @@ class MapLocation extends Component {
       }}>
         <TouchableOpacity
           onPress={() => {
-            this.setState({ region: this.state.region });
+            Geolocation.getCurrentPosition(
+              this.getCurrentLocation,
+              error => {
+                console.log('get current position error: ' + JSON.stringify(error));
+              },
+            );
           }}
           style={{
             borderWidth: 1,
