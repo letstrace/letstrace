@@ -3,15 +3,15 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
+  FlatList,
 } from 'react-native';
 import languages from '../locales/languages';
 import Colors from '../constants/colors';
 import MapView, {
   PROVIDER_GOOGLE,
   Polyline,
-  Circle,
+  Marker,
 } from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation';
 import BottomSheet from 'reanimated-bottom-sheet';
@@ -25,6 +25,8 @@ import mapSmallMarkerIcon from './../assets/svgs/map-small-marker';
 const str = (text) => {
   return languages.t(`map.${text}`);
 }
+
+const RegionDelta = 0.05;
 
 const InitialRegion = {
   latitude: 35.692863,
@@ -53,6 +55,27 @@ const covertToDate = time => {
   const date = datetime.getDate();
   const year = datetime.getFullYear();
   return `${month} ${date}, ${year}`;
+};
+
+const covertToSimpleDate = time => {
+  const monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  const datetime = new Date(time);
+  const month = monthNames[datetime.getMonth()];
+  const date = datetime.getDate();
+  return `${month} ${date}`;
 };
 
 const BSDivider = ({ style }) => {
@@ -100,6 +123,43 @@ const BSDateDetailSectionHeader = ({ prefixTitle, title }) => {
       </View>
       <BSDivider />
     </>
+  );
+};
+
+const BubbleType = {
+  selected: Colors.VIOLET_BUTTON_DARK,
+  unselected: Colors.VIOLET_BUTTON,
+  future: Colors.GRAY_BACKGROUND,
+};
+
+const BSDateBubble = ({ type, date, action }) => {
+  const circleSize = 50;
+  const [month, day] = date.split(' ');
+  return (
+    <TouchableOpacity
+      onPress={() => { action(date) }}
+      style={{
+        marginHorizontal: 15,
+        borderWidth: 1,
+        borderColor: type,
+        backgroundColor: type,
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: circleSize,
+        height: circleSize,
+        borderRadius: circleSize / 2,
+      }}>
+      <Text style={{
+        color: Colors.WHITE,
+        fontSize: 15,
+        fontFamily: fontFamily.primaryMedium,
+      }}>{month}</Text>
+      <Text style={{
+        color: Colors.WHITE,
+        fontSize: 15,
+        fontFamily: fontFamily.primaryMedium,
+      }}>{day}</Text>
+    </TouchableOpacity>
   );
 };
 
@@ -180,7 +240,9 @@ class MapLocation extends Component {
       region: InitialRegion,
       fullLocationData: [],
       locationDataForLine: [],
-      locationDataForCircle: [],
+      locationDataForMarker: [],
+
+      currentSelectedDate: covertToSimpleDate((new Date()).getTime())
     };
     Geolocation.getCurrentPosition(
       this.getCurrentLocation.bind(this),
@@ -201,6 +263,37 @@ class MapLocation extends Component {
     this.props.navigation.goBack();
   }
 
+  extractLocationsForMap(locationData) {
+    if (!locationData) {
+      return;
+    }
+    const getDate = date => (new Date(date)).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    const locationDataForLine = [];
+    const locationDataForMarker = [];
+    for (let i = 0; i < locationData.length; i++) {
+      const location = locationData[i];
+      locationDataForLine.push({
+        latitude: location.latitude,
+        longitude: location.longitude,
+      });
+      locationDataForMarker.push({
+        key: `circle ${i}`,
+        location: {
+          latitude: location.latitude,
+          longitude: location.longitude,
+        },
+        time: getDate(location.time)
+      });
+    }
+    if (locationDataForLine.length === 1) {
+      locationDataForLine.push(locationDataForLine[0]);
+    }
+    this.setState({
+      locationDataForLine,
+      locationDataForMarker,
+    });
+  }
+
   async getDeviceLocations() {
     const locationData = new LocationData();
     const fullLocationData = await locationData.getLocationData();
@@ -209,26 +302,14 @@ class MapLocation extends Component {
       fullLocationData,
     });
 
-    const locationDataForLine = [];
-    const locationDataForCircle = [];
-    for (let i = 0; i < fullLocationData.length; i++) {
-      const location = fullLocationData[i];
-      locationDataForLine.push({
-        latitude: location.latitude,
-        longitude: location.longitude,
-      });
-      locationDataForCircle.push({
-        key: `circle ${i}`,
-        center: {
-          latitude: location.latitude,
-          longitude: location.longitude,
-        },
-      });
+    const currentPoints = [];
+    for (let location of this.state.fullLocationData) {
+      const formattedDate = covertToSimpleDate(location.time);
+      if (formattedDate === this.state.currentSelectedDate) {
+        currentPoints.push(location);
+      }
     }
-    this.setState({
-      locationDataForLine,
-      locationDataForCircle,
-    });
+    this.extractLocationsForMap(currentPoints);
   }
 
   getCurrentLocation(position) {
@@ -237,8 +318,8 @@ class MapLocation extends Component {
         region: {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.05,
+          latitudeDelta: RegionDelta,
+          longitudeDelta: RegionDelta,
         },
       });
     }
@@ -294,11 +375,47 @@ class MapLocation extends Component {
     });
   }
 
+  getBottomSheetDateBubbleContent(dates, points) {
+    return (
+      <FlatList
+        horizontal
+        data={dates}
+        renderItem={({ item }) => {
+          return (
+            <BSDateBubble
+              type={this.state.currentSelectedDate === item ? BubbleType.selected : BubbleType.unselected}
+              date={item}
+              action={(date) => {
+                if (this.state.currentSelectedDate === date) {
+                  return;
+                }
+                this.setState({
+                  currentSelectedDate: date
+                });
+                this.extractLocationsForMap(points[date]);
+                const lastPosition = points[date] && points[date].length && points[date][Math.floor(points[date].length / 2)];
+                if (lastPosition) {
+                  this.setState({
+                    region: {
+                      latitude: lastPosition.latitude,
+                      longitude: lastPosition.longitude,
+                      latitudeDelta: RegionDelta,
+                      longitudeDelta: RegionDelta,
+                    },
+                  });
+                }
+              }}
+            />);
+        }}
+        keyExtractor={date => date}
+      />);
+  }
+
   renderContent() {
     const dates = [];
     const points = {};
     for (let location of this.state.fullLocationData) {
-      const formattedDate = covertToDate(location.time);
+      const formattedDate = covertToSimpleDate(location.time);
       if (dates.length !== 0 && formattedDate === dates[dates.length - 1]) {
         points[formattedDate].push(location);
       } else {
@@ -312,13 +429,7 @@ class MapLocation extends Component {
         backgroundColor: Colors.WHITE,
         height: '100%',
       }}>
-        <ScrollView style={{
-          backgroundColor: Colors.WHITE,
-        }}>
-          <View style={{ marginHorizontal: '4%' }}>
-            {this.getBottomSheetDateDetailContent(dates, points)}
-          </View>
-        </ScrollView>
+        {this.getBottomSheetDateBubbleContent(dates, points)}
       </View>
     );
   }
@@ -391,22 +502,20 @@ class MapLocation extends Component {
             <Polyline
               coordinates={this.state.locationDataForLine}
               strokeColor={Colors.MAP_LINE_STROKE}
-              strokeWidth={1}
+              strokeWidth={2}
             />
-            {this.state.locationDataForCircle.map(circle => (
-              <Circle
-                key={circle.key}
-                center={circle.center}
-                radius={3}
-                lineJoin='round'
-                strokeColor={Colors.MAP_LINE_STROKE}
-                fillColor={Colors.MAP_LINE_STROKE}
+            {this.state.locationDataForMarker.map(locationData => (
+              <Marker
+                key={locationData.key}
+                coordinate={locationData.location}
+                title={locationData.time}
+                tracksViewChanges={false}
               />
             ))}
           </MapView>
           <BottomSheet
             ref={this.bottomSheet}
-            snapPoints={['35%']}
+            snapPoints={[100]}
             initialSnap={0}
             renderContent={this.renderContent}
             renderHeader={this.renderHeader}
