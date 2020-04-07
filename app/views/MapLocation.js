@@ -17,6 +17,7 @@ import { LocationData } from '../services/LocationService';
 import NavigationBarWrapper from '../components/NavigationBarWrapper';
 import mapCurrentLocationIcon from './../assets/svgs/map-current-location';
 import mapSmallMarkerIcon from './../assets/svgs/map-small-marker';
+import geocluster from '../helpers/PointClustering';
 
 const str = text => {
   return languages.t(`map.${text}`);
@@ -287,6 +288,10 @@ class MapLocation extends Component {
     if (!locationData) {
       return;
     }
+
+    let output = geocluster(locationData, 1.5);
+    console.log(output);
+
     const getDate = date =>
       new Date(date).toLocaleString('en-US', {
         hour: 'numeric',
@@ -297,6 +302,7 @@ class MapLocation extends Component {
     const locationDataForMarker = [];
     for (let i = 0; i < locationData.length; i++) {
       const location = locationData[i];
+      // console.log(location);
       locationDataForLine.push({
         latitude: location.latitude,
         longitude: location.longitude,
@@ -317,6 +323,16 @@ class MapLocation extends Component {
       locationDataForLine,
       locationDataForMarker,
     });
+    // testing testing testing testing
+    var junk = [];
+    // console.log(locationDataForMarker);
+    for (let i = 0; i < locationDataForMarker.length; i++) {
+      const location = locationDataForMarker[i]['location'];
+      junk.push([location['latitude'], location['longitude']]);
+    }
+    // console.log(junk);
+    // let output = geocluster(junk, 1.5);
+    // console.log(output);
   }
 
   async getDeviceLocations() {
